@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart PMS | Patient Management</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand"><span class="brand-icon">✚</span><div><b>Smart PMS</b><small>Patient Management</small></div></div>
+    <div class="nav-label">WORKSPACE</div>
+    <button class="nav active" data-page="dashboard">▦ <span>Dashboard</span></button>
+    <button class="nav" data-page="patients">♙ <span>Patient Records</span></button>
+    <button class="nav" data-page="register">＋ <span>Register Patient</span></button>
+    <button class="nav" data-page="rfid">▣ <span>RFID Lookup</span></button>
+    <button class="nav" data-page="recovery">⌕ <span>Lost Card Recovery</span></button>
+    <button class="nav" data-page="logs">☷ <span>Activity Logs</span></button>
+    <div class="sidebar-bottom"><span class="status-dot"></span> Software demo mode<br><small>Hardware integration planned</small></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div><div class="eyebrow">PATIENT MANAGEMENT SYSTEM</div><h1 id="pageTitle">Dashboard</h1></div>
+      <div class="top-actions"><span class="demo-pill">● Demo environment</span><span class="avatar">S</span><span>Staff user</span></div>
+    </header>
+
+    <div id="toast" class="toast hidden" role="status"></div>
+
+    <section id="page-dashboard" class="page">
+      <div class="welcome"><div><h2>Welcome to Smart PMS</h2><p>Manage patient records, simulate RFID scans, and recover records when a card is lost.</p></div><button class="primary" data-go="register">＋ Register patient</button></div>
+      <div class="stats">
+        <article class="stat-card"><div class="stat-top"><span>Total patients</span><span class="stat-icon blue">♙</span></div><strong id="statPatients">0</strong><small>Registered patient records</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Active RFID cards</span><span class="stat-icon purple">▣</span></div><strong id="statCards">0</strong><small>Cards currently linked</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Possible duplicates</span><span class="stat-icon orange">⚑</span></div><strong id="statDuplicates">0</strong><small>Detected during registration</small></article>
+        <article class="stat-card"><div class="stat-top"><span>Activity events</span><span class="stat-icon green">☷</span></div><strong id="statLogs">0</strong><small>Recent actions recorded</small></article>
+      </div>
+      <div class="two-panels">
+        <article class="panel"><div class="panel-heading"><div><h3>Quick actions</h3><p>Common tasks</p></div></div><div class="quick-list">
+          <button data-go="register"><span class="quick-icon blue">＋</span><span><b>Register new patient</b><small>Create a record and check for possible duplicates</small></span><span class="arrow">›</span></button>
+          <button data-go="rfid"><span class="quick-icon purple">▣</span><span><b>Look up RFID card</b><small>Simulate a card scan using its UID</small></span><span class="arrow">›</span></button>
+          <button data-go="recovery"><span class="quick-icon orange">⌕</span><span><b>Recover a lost card</b><small>Find an existing record using patient details</small></span><span class="arrow">›</span></button>
+        </div></article>
+        <article class="panel"><div class="panel-heading"><div><h3>How this prototype works</h3><p>Software-first workflow</p></div></div><ol class="steps"><li><span>1</span><div><b>Register patient</b><small>Save details and optionally link a test card UID.</small></div></li><li><span>2</span><div><b>Find the record</b><small>Search by patient ID, name, or registered phone.</small></div></li><li><span>3</span><div><b>Replace a lost card</b><small>Deactivate the old card association and assign a new UID.</small></div></li></ol><div class="notice">Demo only: use fictional patient data. This browser-based version is not suitable for real medical records.</div></article>
+      </div>
+      <article class="panel"><div class="panel-heading"><div><h3>Recent activity</h3><p>Latest recorded actions</p></div><button class="text-button" data-go="logs">View all →</button></div><div id="recentLogs"></div></article>
+    </section>
+
+    <section id="page-patients" class="page hidden">
+      <div class="page-tools"><div><h2>Patient records</h2><p>Search and review locally stored demo records.</p></div><button class="primary" data-go="register">＋ Register patient</button></div>
+      <div class="panel"><div class="searchbar"><span>⌕</span><input id="patientSearch" placeholder="Search by patient ID, name, or phone..."><button class="secondary" id="clearSearch">Clear</button></div><div id="patientTable"></div></div>
+    </section>
+
+    <section id="page-register" class="page hidden">
+      <div class="page-tools"><div><h2>Register patient</h2><p>Enter the basic details and check possible duplicate records.</p></div></div>
+      <div class="panel form-panel"><form id="patientForm">
+        <div class="form-section-title">Patient information</div>
+        <div class="form-grid">
+          <label>Full name <em>*</em><input id="fullName" required maxlength="100" placeholder="Enter patient's full name"></label>
+          <label>Age<input id="age" type="number" min="0" max="130" placeholder="Age in years"></label>
+          <label>Registered phone<input id="phone" inputmode="tel" maxlength="30" placeholder="Phone number"></label>
+          <label>Date of birth<input id="dob" type="date"></label>
+          <label class="wide">RFID card UID <span class="optional">(optional for now)</span><input id="uid" maxlength="64" placeholder="Example: A1B2C3D4"></label>
+          <label class="wide">Notes <span class="optional">(avoid sensitive information)</span><textarea id="notes" rows="3" maxlength="500" placeholder="Optional non-sensitive notes"></textarea></label>
+        </div>
+        <div id="duplicateBox"></div>
+        <div class="form-footer"><span class="small-muted">* Required field</span><div><button type="button" class="secondary" id="resetForm">Clear form</button><button type="submit" class="primary">Check & save patient</button></div></div>
+      </form></div>
+    </section>
+
+    <section id="page-rfid" class="page hidden">
+      <div class="page-tools"><div><h2>RFID card lookup</h2><p>Software simulation — enter a card UID manually until hardware is integrated.</p></div></div>
+      <div class="panel narrow"><div class="rfid-hero"><div class="rfid-symbol">▣</div><h3>Scan or enter card UID</h3><p>In the next project phase, Arduino + RC522 will send the UID to this application.</p></div><form id="rfidForm"><label>Card UID<input id="scanUID" required placeholder="Example: A1B2C3D4"></label><button class="primary full" type="submit">Find linked patient</button></form><div id="rfidResult"></div></div>
+    </section>
+
+    <section id="page-recovery" class="page hidden">
+      <div class="page-tools"><div><h2>Lost card recovery</h2><p>Find the existing patient record before assigning a replacement card.</p></div></div>
+      <div class="panel narrow"><div class="recovery-note"><b>Identity check required</b><p>A search result is not proof of identity. Authorized staff should verify the patient using an approved process before opening sensitive information or replacing a card.</p></div><form id="recoveryForm"><label>Patient ID, registered phone, or name<input id="recoveryQuery" required placeholder="Enter an identifier or name"></label><button class="primary full">Search records</button></form><div id="recoveryResult"></div></div>
+    </section>
+
+    <section id="page-logs" class="page hidden">
+      <div class="page-tools"><div><h2>Activity logs</h2><p>Latest 300 events stored in this browser.</p></div><button class="secondary" id="exportLogs">Export logs CSV</button></div>
+      <div class="panel"><div id="logsTable"></div></div>
+    </section>
+    <footer>Smart PMS · Academic prototype · Browser-local storage · Not for real patient data</footer>
+  </main>
+
+  <dialog id="patientDialog"><div class="dialog-head"><h2>Patient record</h2><button id="closeDialog" class="icon-button" aria-label="Close">×</button></div><div id="dialogContent"></div></dialog>
+  <script src="js/app.js"></script>
+</body>
+</html>
